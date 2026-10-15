@@ -15,7 +15,7 @@ public class GtaClientTest implements FabricClientGameTest {
 		});
 		String seed = System.getenv().getOrDefault("GTA_TEST_SEED", "12345");
 		try (TestSingleplayerContext sp = context.worldBuilder()
-			.adjustSettings(creator -> creator.getUiState().setSeed(seed))
+			.adjustSettings(creator -> creator.setSeed(seed))
 			.create()) {
 			var server = sp.getServer();
 			sp.getClientWorld().waitForChunksRender();
