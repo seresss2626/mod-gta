@@ -11,7 +11,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 
 public final class ModItems {
-	public static Item PISTOL, SHOTGUN, SMG, SNIPER, RPG, CAR_KEY, BUGGY_BODY;
+	public static Item PISTOL, SHOTGUN, SMG, SNIPER, RPG, CAR_KEY, PHONE, BUGGY_BODY;
 
 	private static <T extends Item> T reg(String name, Function<Item.Properties, T> factory, Item.Properties props) {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(GtaCraft.MODID, name));
@@ -26,7 +26,13 @@ public final class ModItems {
 		SNIPER = reg("sniper", p -> new GunItem(p, GunItem.Type.SNIPER), new Item.Properties().stacksTo(1));
 		RPG = reg("rpg", p -> new GunItem(p, GunItem.Type.RPG), new Item.Properties().stacksTo(1));
 		CAR_KEY = reg("car_key", CarKeyItem::new, new Item.Properties().stacksTo(1));
-		BUGGY_BODY = reg("buggy_body", Item::new, new Item.Properties());
+		PHONE = reg("phone", PhoneItem::new, new Item.Properties().stacksTo(1));
+		for (CarType t : CarType.values()) {
+			Item body = reg(t.id + "_body", Item::new, new Item.Properties());
+			if (t == CarType.BUGGY) {
+				BUGGY_BODY = body;
+			}
+		}
 
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(e -> {
 			e.accept(PISTOL);
@@ -35,6 +41,6 @@ public final class ModItems {
 			e.accept(SNIPER);
 			e.accept(RPG);
 		});
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(e -> e.accept(CAR_KEY));
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(e -> { e.accept(CAR_KEY); e.accept(PHONE); });
 	}
 }

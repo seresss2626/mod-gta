@@ -5,5 +5,10 @@
  "item.gtacraft.sniper": "Снайперская винтовка",
  "item.gtacraft.rpg": "Ракетомёт",
  "item.gtacraft.car_key": "Ключ от машины",
- "item.gtacraft.buggy_body": "Кузов багги"
+ "item.gtacraft.phone": "Телефон",
+ "item.gtacraft.buggy_body": "Кузов багги",
+ "item.gtacraft.sport_body": "Кузов спорткара",
+ "item.gtacraft.pickup_body": "Кузов пикапа",
+ "item.gtacraft.taxi_body": "Кузов такси",
+ "item.gtacraft.police_body": "Кузов полицейской"
 }

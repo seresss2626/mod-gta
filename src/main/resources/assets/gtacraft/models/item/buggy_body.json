@@ -1,12 +1,12 @@
 {
  "textures": {
-  "paint": "gtacraft:item/buggy_paint",
   "dark": "gtacraft:item/buggy_dark",
   "metal": "gtacraft:item/buggy_metal",
   "light": "gtacraft:item/buggy_light",
   "tail": "gtacraft:item/buggy_tail",
   "seat": "gtacraft:item/buggy_seat",
   "wheel": "gtacraft:item/buggy_wheel",
+  "paint": "gtacraft:item/buggy_paint",
   "particle": "gtacraft:item/buggy_paint"
  },
  "elements": [

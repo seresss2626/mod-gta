@@ -40,8 +40,12 @@ jobs:
             sleep 25
             echo "execute if block 0 -61 0 minecraft:black_concrete run say CITY_ROAD_OK"
             echo "execute if block 0 -60 -20 minecraft:air run say CITY_AIR_OK"
+            echo "execute as @e[tag=gta_ped] run say PED_FOUND"
+            echo "gta spawncar 3 -60 3"
             sleep 3
             echo "stop" ) | timeout 400 ./gradlew runServer --console=plain --no-daemon > server.log 2>&1
+          cat run/world/gtacraft_city.json >> server.log || true
+          echo >> server.log
       - name: publish build log and jar to ci-out branch
         if: github.event_name == 'push'
         run: |

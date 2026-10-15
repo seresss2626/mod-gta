@@ -28,7 +28,11 @@ public class CarKeyItem extends Item {
 	@Override
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		if (level instanceof ServerLevel sl && player instanceof ServerPlayer sp) {
-			CarManager.enterNearest(sl, sp);
+			if (sp.getVehicle() != null && CarManager.isCarEntity(sp.getVehicle())) {
+				Radio.next(sp);
+			} else {
+				CarManager.enterNearest(sl, sp);
+			}
 		}
 		return InteractionResult.SUCCESS;
 	}

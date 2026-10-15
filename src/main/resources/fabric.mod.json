@@ -8,7 +8,8 @@
 	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["dev.gtacraft.GtaCraft"]
+		"main": ["dev.gtacraft.GtaCraft"],
+		"client": ["dev.gtacraft.client.GtaCraftClient"]
 	},
 	"depends": {
 		"fabricloader": ">=0.19.5",

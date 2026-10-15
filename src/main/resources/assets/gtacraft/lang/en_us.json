@@ -5,5 +5,10 @@
  "item.gtacraft.sniper": "Sniper Rifle",
  "item.gtacraft.rpg": "Rocket Launcher",
  "item.gtacraft.car_key": "Car Key",
- "item.gtacraft.buggy_body": "Buggy Body"
+ "item.gtacraft.phone": "Phone",
+ "item.gtacraft.buggy_body": "Buggy Body",
+ "item.gtacraft.sport_body": "Sports Car Body",
+ "item.gtacraft.pickup_body": "Pickup Body",
+ "item.gtacraft.taxi_body": "Taxi Body",
+ "item.gtacraft.police_body": "Police Car Body"
 }

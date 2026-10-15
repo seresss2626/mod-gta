@@ -31,23 +31,46 @@ public final class CarManager {
 	private static final double LIFT = 0.5125;
 
 	public static void spawn(ServerLevel level, double x, double y, double z, float yaw) {
+		spawn(level, x, y, z, yaw, CarType.values()[level.random.nextInt(CarType.values().length)]);
+	}
+
+	public static void spawn(ServerLevel level, double x, double y, double z, float yaw, CarType type) {
 		MinecraftServer server = level.getServer();
 		String cmd = String.format(Locale.ROOT,
 			"summon minecraft:armor_stand %.3f %.3f %.3f {Small:1b,Invisible:1b,NoGravity:1b,Invulnerable:1b,Silent:1b,"
-				+ "Rotation:[%.1ff,0.0f],Tags:[\"%s\"],Passengers:[{id:\"minecraft:item_display\","
-				+ "item:{id:\"gtacraft:buggy_body\",count:1},item_display:\"none\",Rotation:[%.1ff,0.0f],"
+				+ "Rotation:[%.1ff,0.0f],Tags:[\"%s\",\"%s\"],Passengers:[{id:\"minecraft:item_display\","
+				+ "item:{id:\"%s\",count:1},item_display:\"none\",Rotation:[%.1ff,0.0f],"
 				+ "transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],"
 				+ "scale:[%.2ff,%.2ff,%.2ff],translation:[0f,%.4ff,0f]}}]}",
-			x, y, z, yaw, TAG, yaw, SCALE, SCALE, SCALE, LIFT);
+			x, y, z, yaw, TAG, type.tag(), type.bodyItem(), yaw, SCALE, SCALE, SCALE, LIFT);
 		GtaCraft.LOG.info("Spawning car: {}", cmd);
 		server.getCommands().performPrefixedCommand(
 			server.createCommandSourceStack().withLevel(level).withCallback((ok, result) -> GtaCraft.LOG.info("Car spawn command ok={} result={}", ok, result)),
 			cmd);
 	}
 
+	public static ArmorStand spawnAndGet(ServerLevel level, double x, double y, double z, float yaw, CarType type) {
+		spawn(level, x, y, z, yaw, type);
+		List<ArmorStand> list = level.getEntitiesOfClass(ArmorStand.class, new AABB(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 1.5, z + 0.5), CarManager::isCar);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
 	public static void spawnInFront(ServerLevel level, ServerPlayer p) {
+		spawnInFront(level, p, null);
+	}
+
+	public static void spawnInFront(ServerLevel level, ServerPlayer p, CarType type) {
 		double ang = Math.toRadians(p.getYRot());
-		spawn(level, p.getX() - Math.sin(ang) * 4, p.getY(), p.getZ() + Math.cos(ang) * 4, p.getYRot());
+		double x = p.getX() - Math.sin(ang) * 4, z = p.getZ() + Math.cos(ang) * 4;
+		if (type == null) {
+			spawn(level, x, p.getY(), z, p.getYRot());
+		} else {
+			spawn(level, x, p.getY(), z, p.getYRot(), type);
+		}
+	}
+
+	public static boolean isCarEntity(Entity e) {
+		return isCar(e);
 	}
 
 	private static boolean isCar(Entity e) {
@@ -95,9 +118,10 @@ public final class CarManager {
 
 	private static void drive(ServerLevel level, ServerPlayer p, ArmorStand car) {
 		Input in = p.getLastClientInput();
+		CarType type = CarType.ofTags(car.getTags());
 		double v = SPEED.getOrDefault(car.getUUID(), 0.0);
 		if (in.forward()) {
-			v += 0.03;
+			v += type.accel;
 		} else if (in.backward()) {
 			v -= v > 0.02 ? 0.05 : 0.018;
 		} else {
@@ -106,14 +130,14 @@ public final class CarManager {
 		if (in.jump()) {
 			v *= 0.86;
 		}
-		v = Math.max(-0.25, Math.min(0.72, v));
+		v = Math.max(-0.25, Math.min(type.maxSpeed, v));
 		if (Math.abs(v) < 0.004 && !in.forward() && !in.backward()) {
 			v = 0;
 		}
 
 		float yaw = car.getYRot();
 		float steer = (in.right() ? 1 : 0) - (in.left() ? 1 : 0);
-		yaw += steer * 4.2f * (float) Math.signum(v) * (float) Math.min(1.0, Math.abs(v) / 0.2);
+		yaw += steer * type.turn * (float) Math.signum(v) * (float) Math.min(1.0, Math.abs(v) / 0.2);
 
 		double ang = Math.toRadians(yaw);
 		double fx = -Math.sin(ang), fz = Math.cos(ang);

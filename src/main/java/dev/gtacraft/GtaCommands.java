@@ -16,9 +16,10 @@ public final class GtaCommands {
 				Kit.give(c.getSource().getPlayerOrException());
 				return 1;
 			}))
-			.then(Commands.literal("car").executes(c -> {
-				ServerPlayer p = c.getSource().getPlayerOrException();
-				CarManager.spawnInFront((net.minecraft.server.level.ServerLevel) p.level(), p);
+			.then(carCommand())
+			.then(missionCommand())
+			.then(Commands.literal("radio").executes(c -> {
+				Radio.next(c.getSource().getPlayerOrException());
 				return 1;
 			}))
 			.then(Commands.literal("spawncar")
@@ -43,6 +44,40 @@ public final class GtaCommands {
 				.executes(c -> city(c.getSource(), 3))
 				.then(Commands.argument("size", IntegerArgumentType.integer(1, 6))
 					.executes(c -> city(c.getSource(), IntegerArgumentType.getInteger(c, "size"))))));
+	}
+
+	private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> carCommand() {
+		com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> car = Commands.literal("car").executes(c -> {
+			ServerPlayer p = c.getSource().getPlayerOrException();
+			CarManager.spawnInFront((net.minecraft.server.level.ServerLevel) p.level(), p);
+			return 1;
+		});
+		for (CarType t : CarType.values()) {
+			car.then(Commands.literal(t.id).executes(c -> {
+				ServerPlayer p = c.getSource().getPlayerOrException();
+				CarManager.spawnInFront((net.minecraft.server.level.ServerLevel) p.level(), p, t);
+				return 1;
+			}));
+		}
+		return car;
+	}
+
+	private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> missionCommand() {
+		com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> m = Commands.literal("mission").executes(c -> {
+			MissionManager.startRandom(c.getSource().getPlayerOrException());
+			return 1;
+		});
+		for (MissionManager.Type t : MissionManager.Type.values()) {
+			m.then(Commands.literal(t.id).executes(c -> {
+				MissionManager.start(c.getSource().getPlayerOrException(), t);
+				return 1;
+			}));
+		}
+		m.then(Commands.literal("cancel").executes(c -> {
+			MissionManager.cancel(c.getSource().getPlayerOrException());
+			return 1;
+		}));
+		return m;
 	}
 
 	private static int city(CommandSourceStack src, int n) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
