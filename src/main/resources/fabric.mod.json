@@ -1,0 +1,19 @@
+{
+	"schemaVersion": 1,
+	"id": "gtacraft",
+	"version": "${version}",
+	"name": "GTA Craft",
+	"description": "Оружие, машины и город в стиле GTA для Minecraft.",
+	"authors": ["seresss2626"],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["dev.gtacraft.GtaCraft"]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
