@@ -52,7 +52,11 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 libegl1 > /dev/null
-          timeout 1200 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClientGameTest --console=plain --no-daemon > client.log 2>&1 || true
+          for attempt in 1 2 3; do
+            rm -rf build/run/clientGameTest/saves
+            timeout 900 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClientGameTest --console=plain --no-daemon > client.log 2>&1 && break || true
+            echo "attempt $attempt failed" >> client_attempts.log
+          done
       - name: publish build log and jar to ci-out branch
         if: github.event_name == 'push'
         run: |
@@ -60,6 +64,7 @@ jobs:
           tail -n 400 build.log > /tmp/out/build.log
           tail -n 250 server.log > /tmp/out/server.log 2>/dev/null || true
           tail -n 300 client.log > /tmp/out/client.log 2>/dev/null || true
+          cp client_attempts.log /tmp/out/ 2>/dev/null || true
           mkdir -p /tmp/out/screens
           find . -path ./node_modules -prune -o -name '*.png' -path '*screenshots*' -print -exec cp {} /tmp/out/screens/ \; 2>/dev/null || true
           echo "${{ steps.build.outcome }}" > /tmp/out/status.txt
