@@ -39,7 +39,10 @@ public final class CarManager {
 				+ "transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],"
 				+ "scale:[%.2ff,%.2ff,%.2ff],translation:[0f,%.4ff,0f]}}]}",
 			x, y, z, yaw, TAG, yaw, SCALE, SCALE, SCALE, LIFT);
-		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withLevel(level).withSuppressedOutput(), cmd);
+		GtaCraft.LOG.info("Spawning car: {}", cmd);
+		server.getCommands().performPrefixedCommand(
+			server.createCommandSourceStack().withLevel(level).withCallback((ok, result) -> GtaCraft.LOG.info("Car spawn command ok={} result={}", ok, result)),
+			cmd);
 	}
 
 	public static void spawnInFront(ServerLevel level, ServerPlayer p) {
