@@ -55,12 +55,14 @@ jobs:
           J=$(find ~/.gradle -name 'fabric-client-gametest-api-v1*.jar' ! -name '*sources*' | head -1); echo "$J" > api_info.log
           javap -cp "$J" net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder >> api_info.log 2>&1 || true
           nproc > client_attempts.log; free -m >> client_attempts.log
-          for attempt in 1 2 3; do
-            export GTA_TEST_SEED=$((attempt * 7919))
-            rm -rf build/run/clientGameTest/saves
-            LP_NUM_THREADS=2 LIBGL_ALWAYS_SOFTWARE=1 timeout 900 xvfb-run -a -s "-screen 0 854x480x24" ./gradlew runClientGameTest --console=plain --no-daemon > client.log 2>&1 && break || true
-            echo "attempt $attempt failed" >> client_attempts.log
+          rm -rf build/run/clientGameTest/saves
+          LP_NUM_THREADS=2 LIBGL_ALWAYS_SOFTWARE=1 GTA_TEST_SEED=7919 timeout 900 xvfb-run -a -s "-screen 0 854x480x24" ./gradlew runClientGameTest --console=plain --no-daemon > client.log 2>&1 &
+          sleep 75
+          for pid in $(pgrep -f 'net.fabricmc.loader.impl.launch.knot.KnotClient'); do
+            jcmd $pid Thread.print > threads.log 2>&1 || true
           done
+          uptime >> client_attempts.log; top -b -n1 | head -15 >> client_attempts.log
+          wait || true
       - name: publish build log and jar to ci-out branch
         if: github.event_name == 'push'
         run: |
@@ -68,7 +70,7 @@ jobs:
           tail -n 400 build.log > /tmp/out/build.log
           tail -n 250 server.log > /tmp/out/server.log 2>/dev/null || true
           grep -v 'World loading finished' client.log | tail -n 300 > /tmp/out/client.log 2>/dev/null || true
-          cp client_attempts.log api_info.log /tmp/out/ 2>/dev/null || true
+          tail -n 400 threads.log > /tmp/out/threads.log 2>/dev/null; cp client_attempts.log api_info.log /tmp/out/ 2>/dev/null || true
           mkdir -p /tmp/out/screens
           find . -path ./node_modules -prune -o -name '*.png' -path '*screenshots*' -print -exec cp {} /tmp/out/screens/ \; 2>/dev/null || true
           echo "${{ steps.build.outcome }}" > /tmp/out/status.txt
