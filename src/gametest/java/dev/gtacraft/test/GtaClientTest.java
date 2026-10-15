@@ -77,8 +77,10 @@ public class GtaClientTest implements FabricClientGameTest {
 			server.runCommand("execute as @p run gta enter");
 			context.waitTicks(10);
 			context.getInput().pressKey(options -> options.keyTogglePerspective);
-			context.getInput().holdKeyFor(options -> options.keyUp, 50);
-			context.takeScreenshot("07_driving_third_person");
+			context.getInput().holdKeyFor(options -> options.keyUp, 60);
+			context.takeScreenshot("07_driving_forward");
+			context.getInput().holdKeyFor(options -> options.keyLeft, 25);
+			context.takeScreenshot("08_driving_turn_left");
 		}
 	}
 }

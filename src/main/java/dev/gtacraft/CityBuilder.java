@@ -118,11 +118,22 @@ public final class CityBuilder {
 		}
 		// кварталы
 		int bankLot = r.nextInt(n * n);
+		java.util.Set<Integer> shopLots = new java.util.HashSet<>();
+		while (n * n >= 4 && shopLots.size() < 2) {
+			int k = r.nextInt(n * n);
+			if (k != bankLot) {
+				shopLots.add(k);
+			}
+		}
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				int lx = x0 + i * CELL + BAND, lz = z0 + j * CELL + BAND;
 				if (i * n + j == bankLot) {
 					bank(t, r, gy, lx, lz);
+					continue;
+				}
+				if (shopLots.contains(i * n + j)) {
+					shop(t, r, gy, lx, lz);
 					continue;
 				}
 				double roll = r.nextDouble();
