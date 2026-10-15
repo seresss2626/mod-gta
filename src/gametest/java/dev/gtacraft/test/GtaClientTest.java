@@ -12,6 +12,7 @@ public class GtaClientTest implements FabricClientGameTest {
 		context.runOnClient(client -> {
 			client.options.renderDistance().set(8);
 			client.options.simulationDistance().set(8);
+			client.options.framerateLimit().set(20);
 		});
 		String seed = System.getenv().getOrDefault("GTA_TEST_SEED", "12345");
 		try (TestSingleplayerContext sp = context.worldBuilder()
