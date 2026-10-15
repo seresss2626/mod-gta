@@ -50,13 +50,17 @@ public final class CityBuilder {
 	}
 
 	public static void start(ServerLevel level, ServerPlayer p, int n) {
+		start(level, p, n, p.blockPosition().getX(), p.blockPosition().getY() - 1, p.blockPosition().getZ());
+	}
+
+	/** (px, gy, pz): центр дороги на среднем перекрёстке; gy: высота земли. */
+	public static void start(ServerLevel level, ServerPlayer p, int n, int px, int gy, int pz) {
 		Task t = new Task();
 		t.level = level;
 		t.owner = p;
 		int m = n / 2;
-		int gy = p.blockPosition().getY() - 1;
-		int x0 = p.blockPosition().getX() - m * CELL - 5;
-		int z0 = p.blockPosition().getZ() - m * CELL - 5;
+		int x0 = px - m * CELL - 5;
+		int z0 = pz - m * CELL - 5;
 		int span = n * CELL + BAND;
 		int x1 = x0 + span - 1, z1 = z0 + span - 1;
 		Random r = new Random(x0 * 341873128712L + z0 * 132897987541L);
@@ -120,7 +124,7 @@ public final class CityBuilder {
 			}
 		}
 		// машины на дорогах возле центра
-		int cx = p.blockPosition().getX(), cz = p.blockPosition().getZ();
+		int cx = px, cz = pz;
 		t.cars.add(new double[]{cx + 0.5, gy + 1, cz + 7.5, 0});
 		t.cars.add(new double[]{cx + 0.5 - 2, gy + 1, cz - 9.5, 180});
 		t.cars.add(new double[]{cx + 9.5, gy + 1, cz + 0.5, 90});
@@ -259,13 +263,18 @@ public final class CityBuilder {
 		int pct = (int) (100 * t.done / Math.max(1, t.total));
 		if (pct != t.lastPct && pct % 10 == 0) {
 			t.lastPct = pct;
-			t.owner.displayClientMessage(Component.literal("Город: " + pct + "%"), true);
+			if (t.owner != null) {
+				t.owner.displayClientMessage(Component.literal("Город: " + pct + "%"), true);
+			}
 		}
 		if (t.cur == null && t.q.isEmpty()) {
 			for (double[] c : t.cars) {
 				CarManager.spawn(t.level, c[0], c[1], c[2], (float) c[3]);
 			}
-			t.owner.displayClientMessage(Component.literal("Город готов. Садитесь в машину: ключ в руки и правый клик рядом с ней."), false);
+			if (t.owner != null) {
+				t.owner.displayClientMessage(Component.literal("Город готов. Садитесь в машину: ключ в руки и правый клик рядом с ней."), false);
+			}
+			GtaCraft.LOG.info("City finished: {} blocks processed", t.done);
 			TASKS.remove(0);
 		}
 	}

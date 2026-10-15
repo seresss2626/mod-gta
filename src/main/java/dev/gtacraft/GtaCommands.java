@@ -1,6 +1,7 @@
 package dev.gtacraft;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,6 +21,24 @@ public final class GtaCommands {
 				CarManager.spawnInFront((net.minecraft.server.level.ServerLevel) p.level(), p);
 				return 1;
 			}))
+			.then(Commands.literal("spawncar")
+				.then(Commands.argument("x", DoubleArgumentType.doubleArg())
+					.then(Commands.argument("y", DoubleArgumentType.doubleArg())
+						.then(Commands.argument("z", DoubleArgumentType.doubleArg()).executes(c -> {
+							CarManager.spawn(c.getSource().getLevel(), DoubleArgumentType.getDouble(c, "x"),
+								DoubleArgumentType.getDouble(c, "y"), DoubleArgumentType.getDouble(c, "z"), 0f);
+							return 1;
+						})))))
+			.then(Commands.literal("citypos")
+				.then(Commands.argument("x", IntegerArgumentType.integer())
+					.then(Commands.argument("y", IntegerArgumentType.integer())
+						.then(Commands.argument("z", IntegerArgumentType.integer())
+							.then(Commands.argument("size", IntegerArgumentType.integer(1, 6)).executes(c -> {
+								CityBuilder.start(c.getSource().getLevel(), null, IntegerArgumentType.getInteger(c, "size"),
+									IntegerArgumentType.getInteger(c, "x"), IntegerArgumentType.getInteger(c, "y"),
+									IntegerArgumentType.getInteger(c, "z"));
+								return 1;
+							}))))))
 			.then(Commands.literal("city")
 				.executes(c -> city(c.getSource(), 3))
 				.then(Commands.argument("size", IntegerArgumentType.integer(1, 6))

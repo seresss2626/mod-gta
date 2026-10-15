@@ -21,11 +21,30 @@ jobs:
         id: build
         continue-on-error: true
         run: ./gradlew build --console=plain --no-daemon > build.log 2>&1
+      - name: server smoke test
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          printf 'online-mode=false\nlevel-type=minecraft\\:flat\nspawn-protection=0\nview-distance=4\n' > run/server.properties
+          ( sleep 120
+            echo "gta spawncar 0 -60 0"
+            sleep 3
+            echo "data get entity @e[tag=gta_car,limit=1]"
+            echo "data get entity @e[type=minecraft:item_display,limit=1]"
+            echo "gta citypos 0 -61 0 1"
+            sleep 25
+            echo "execute if block 0 -61 0 minecraft:black_concrete run say CITY_ROAD_OK"
+            echo "execute if block 0 -60 -20 minecraft:air run say CITY_AIR_OK"
+            sleep 3
+            echo "stop" ) | timeout 400 ./gradlew runServer --console=plain --no-daemon > server.log 2>&1
       - name: publish build log and jar to ci-out branch
         if: github.event_name == 'push'
         run: |
           mkdir -p /tmp/out
           tail -n 400 build.log > /tmp/out/build.log
+          tail -n 250 server.log > /tmp/out/server.log 2>/dev/null || true
           echo "${{ steps.build.outcome }}" > /tmp/out/status.txt
           echo "${GITHUB_SHA}" > /tmp/out/sha.txt
           cp build/libs/*.jar /tmp/out/ 2>/dev/null || true
