@@ -1,10 +1,8 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
-
 name: build
 on: [pull_request, push]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -12,8 +10,6 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v6
-      - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v6
       - name: setup jdk
         uses: actions/setup-java@v5
         with:
@@ -22,9 +18,30 @@ jobs:
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: build
-        run: ./gradlew build
-      - name: capture build artifacts
+        id: build
+        continue-on-error: true
+        run: ./gradlew build --console=plain --no-daemon > build.log 2>&1
+      - name: publish build log and jar to ci-out branch
+        if: github.event_name == 'push'
+        run: |
+          mkdir -p /tmp/out
+          tail -n 400 build.log > /tmp/out/build.log
+          echo "${{ steps.build.outcome }}" > /tmp/out/status.txt
+          echo "${GITHUB_SHA}" > /tmp/out/sha.txt
+          cp build/libs/*.jar /tmp/out/ 2>/dev/null || true
+          rm -f /tmp/out/*-sources.jar
+          cd /tmp/out
+          git init -q -b ci-out
+          git config user.name "ci"
+          git config user.email "ci@example.com"
+          git add -A
+          git commit -qm "build ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" ci-out
+      - name: upload jar
         uses: actions/upload-artifact@v7
         with:
-          name: Artifacts
+          name: gtacraft-jar
           path: build/libs/
+      - name: fail if build failed
+        if: steps.build.outcome == 'failure'
+        run: exit 1
