@@ -54,6 +54,7 @@ jobs:
           sudo apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 libegl1 > /dev/null
           nproc > client_attempts.log; free -m >> client_attempts.log
           for attempt in 1 2 3; do
+            export GTA_TEST_SEED=$((attempt * 7919))
             rm -rf build/run/clientGameTest/saves
             LP_NUM_THREADS=2 LIBGL_ALWAYS_SOFTWARE=1 timeout 900 xvfb-run -a -s "-screen 0 854x480x24" ./gradlew runClientGameTest --console=plain --no-daemon > client.log 2>&1 && break || true
             echo "attempt $attempt failed" >> client_attempts.log

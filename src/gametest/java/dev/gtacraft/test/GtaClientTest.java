@@ -13,7 +13,10 @@ public class GtaClientTest implements FabricClientGameTest {
 			client.options.renderDistance().set(8);
 			client.options.simulationDistance().set(8);
 		});
-		try (TestSingleplayerContext sp = context.worldBuilder().create()) {
+		String seed = System.getenv().getOrDefault("GTA_TEST_SEED", "12345");
+		try (TestSingleplayerContext sp = context.worldBuilder()
+			.adjustSettings(creator -> creator.getUiState().setSeed(seed))
+			.create()) {
 			var server = sp.getServer();
 			sp.getClientWorld().waitForChunksRender();
 
