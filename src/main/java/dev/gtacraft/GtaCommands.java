@@ -18,18 +18,28 @@ public final class GtaCommands {
 			}))
 			.then(carCommand())
 			.then(missionCommand())
+			.then(Commands.literal("enter").executes(c -> {
+				ServerPlayer p = c.getSource().getPlayerOrException();
+				CarManager.enterNearest((net.minecraft.server.level.ServerLevel) p.level(), p);
+				return 1;
+			}))
+			.then(Commands.literal("wanted")
+				.then(Commands.argument("stars", IntegerArgumentType.integer(0, 5)).executes(c -> {
+					ServerPlayer p = c.getSource().getPlayerOrException();
+					Wanted.clear(p);
+					Wanted.add(p, IntegerArgumentType.getInteger(c, "stars"));
+					return 1;
+				})))
+			.then(Commands.literal("money")
+				.then(Commands.argument("amount", IntegerArgumentType.integer(-1000000, 1000000)).executes(c -> {
+					PlayerStats.add(c.getSource().getPlayerOrException(), IntegerArgumentType.getInteger(c, "amount"));
+					return 1;
+				})))
 			.then(Commands.literal("radio").executes(c -> {
 				Radio.next(c.getSource().getPlayerOrException());
 				return 1;
 			}))
-			.then(Commands.literal("spawncar")
-				.then(Commands.argument("x", DoubleArgumentType.doubleArg())
-					.then(Commands.argument("y", DoubleArgumentType.doubleArg())
-						.then(Commands.argument("z", DoubleArgumentType.doubleArg()).executes(c -> {
-							CarManager.spawn(c.getSource().getLevel(), DoubleArgumentType.getDouble(c, "x"),
-								DoubleArgumentType.getDouble(c, "y"), DoubleArgumentType.getDouble(c, "z"), 0f);
-							return 1;
-						})))))
+			.then(spawnCarCommand())
 			.then(Commands.literal("citypos")
 				.then(Commands.argument("x", IntegerArgumentType.integer())
 					.then(Commands.argument("y", IntegerArgumentType.integer())
@@ -44,6 +54,25 @@ public final class GtaCommands {
 				.executes(c -> city(c.getSource(), 3))
 				.then(Commands.argument("size", IntegerArgumentType.integer(1, 6))
 					.executes(c -> city(c.getSource(), IntegerArgumentType.getInteger(c, "size"))))));
+	}
+
+	private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> spawnCarCommand() {
+		com.mojang.brigadier.builder.RequiredArgumentBuilder<CommandSourceStack, Double> z = Commands.argument("z", DoubleArgumentType.doubleArg());
+		z.executes(c -> {
+			CarManager.spawn(c.getSource().getLevel(), DoubleArgumentType.getDouble(c, "x"),
+				DoubleArgumentType.getDouble(c, "y"), DoubleArgumentType.getDouble(c, "z"), 0f);
+			return 1;
+		});
+		for (CarType t : CarType.values()) {
+			z.then(Commands.literal(t.id).executes(c -> {
+				CarManager.spawn(c.getSource().getLevel(), DoubleArgumentType.getDouble(c, "x"),
+					DoubleArgumentType.getDouble(c, "y"), DoubleArgumentType.getDouble(c, "z"), 0f, t);
+				return 1;
+			}));
+		}
+		return Commands.literal("spawncar")
+			.then(Commands.argument("x", DoubleArgumentType.doubleArg())
+				.then(Commands.argument("y", DoubleArgumentType.doubleArg()).then(z)));
 	}
 
 	private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> carCommand() {

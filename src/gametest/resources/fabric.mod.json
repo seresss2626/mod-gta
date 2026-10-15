@@ -1,0 +1,12 @@
+{
+	"schemaVersion": 1,
+	"id": "gtacraft-test",
+	"version": "1.0.0",
+	"environment": "client",
+	"entrypoints": {
+		"fabric-client-gametest": ["dev.gtacraft.test.GtaClientTest"]
+	},
+	"depends": {
+		"gtacraft": "*"
+	}
+}
