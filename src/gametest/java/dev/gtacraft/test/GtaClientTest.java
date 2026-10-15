@@ -10,16 +10,16 @@ public class GtaClientTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		context.runOnClient(client -> {
-			client.options.renderDistance().set(8);
+			client.options.renderDistance().set(7);
 			client.options.simulationDistance().set(8);
-			client.options.framerateLimit().set(20);
+			client.options.framerateLimit().set(30);
 		});
-		String seed = System.getenv().getOrDefault("GTA_TEST_SEED", "12345");
+		String seed = System.getenv().getOrDefault("GTA_TEST_SEED", "7919");
 		try (TestSingleplayerContext sp = context.worldBuilder()
 			.adjustSettings(creator -> creator.setSeed(seed))
 			.create()) {
 			var server = sp.getServer();
-			sp.getClientWorld().waitForChunksRender();
+			context.waitTicks(100);
 
 			server.runCommand("gamemode spectator @p");
 			server.runCommand("tp @p 0 140 0");
@@ -28,14 +28,14 @@ public class GtaClientTest implements FabricClientGameTest {
 
 			server.runCommand("tp @p -50 140 -50 -45 30");
 			context.waitTicks(80);
-			sp.getClientWorld().waitForChunksRender();
+			context.waitTicks(100);
 			context.takeScreenshot("01_city_aerial");
 
 			City c = City.current;
 			if (c != null && c.bank != null) {
 				server.runCommand("tp @p " + c.bank[0] + " 104 " + (c.bank[1] - 16) + " 0 8");
 				context.waitTicks(60);
-				sp.getClientWorld().waitForChunksRender();
+				context.waitTicks(100);
 				context.takeScreenshot("02_bank_facade");
 				server.runCommand("tp @p " + c.bank[2] + " 102 " + (c.bank[4] - 5) + " 0 20");
 				context.waitTicks(40);
@@ -45,7 +45,7 @@ public class GtaClientTest implements FabricClientGameTest {
 				int[] s = c.shops.get(0);
 				server.runCommand("tp @p " + s[0] + " 103 " + (s[1] - 12) + " 0 10");
 				context.waitTicks(60);
-				sp.getClientWorld().waitForChunksRender();
+				context.waitTicks(100);
 				context.takeScreenshot("04_shop_facade");
 			}
 

@@ -56,7 +56,7 @@ jobs:
           javap -cp "$J" net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder >> api_info.log 2>&1 || true
           nproc > client_attempts.log; free -m >> client_attempts.log
           rm -rf build/run/clientGameTest/saves
-          LP_NUM_THREADS=2 LIBGL_ALWAYS_SOFTWARE=1 GTA_TEST_SEED=7919 timeout 900 xvfb-run -a -s "-screen 0 854x480x24" ./gradlew runClientGameTest --console=plain --no-daemon > client.log 2>&1 &
+          GTA_TEST_SEED=7919 timeout 900 xvfb-run -a -s "-screen 0 854x480x24" ./gradlew runClientGameTest --console=plain --no-daemon > client.log 2>&1 &
           sleep 75
           for pid in $(pgrep -f 'net.fabricmc.loader.impl.launch.knot.KnotClient'); do
             jcmd $pid Thread.print > threads.log 2>&1 || true
