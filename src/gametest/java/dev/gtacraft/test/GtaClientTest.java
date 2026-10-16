@@ -10,8 +10,8 @@ public class GtaClientTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		context.runOnClient(client -> {
-			client.options.renderDistance().set(7);
-			client.options.simulationDistance().set(8);
+			client.options.renderDistance().set(3);
+			client.options.simulationDistance().set(5);
 			client.options.framerateLimit().set(30);
 		});
 		String seed = System.getenv().getOrDefault("GTA_TEST_SEED", "7919");
@@ -20,6 +20,10 @@ public class GtaClientTest implements FabricClientGameTest {
 			.create()) {
 			var server = sp.getServer();
 			context.waitTicks(100);
+			context.runOnClient(client -> {
+				client.options.renderDistance().set(7);
+				client.options.simulationDistance().set(8);
+			});
 
 			server.runCommand("gamemode spectator @p");
 			server.runCommand("tp @p 0 140 0");
