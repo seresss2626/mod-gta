@@ -41,6 +41,8 @@ jobs:
             echo "execute if block 0 -61 0 minecraft:black_concrete run say CITY_ROAD_OK"
             echo "execute if block 0 -60 -20 minecraft:air run say CITY_AIR_OK"
             echo "execute as @e[tag=gta_ped] run say PED_FOUND"
+            echo "execute as @e[type=minecraft:mannequin] run say MANNEQUIN_FOUND"
+            echo "data get entity @e[type=minecraft:mannequin,limit=1]"
             echo "gta spawncar 3 -60 3"
             sleep 3
             echo "stop" ) | timeout 400 ./gradlew runServer --console=plain --no-daemon > server.log 2>&1

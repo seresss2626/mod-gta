@@ -47,6 +47,11 @@ public final class GtaHud {
 			sx -= 26;
 		}
 
+		// оружие и патроны
+		if (!s.ammo().isEmpty()) {
+			g.drawString(mc.font, s.ammo(), right - mc.font.width(s.ammo()), 94, 0xFFF2C94C, true);
+		}
+
 		// радио
 		if (!s.radio().isEmpty()) {
 			String r = "♪ " + s.radio();

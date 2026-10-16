@@ -10,5 +10,13 @@
  "item.gtacraft.sport_body": "Кузов спорткара",
  "item.gtacraft.pickup_body": "Кузов пикапа",
  "item.gtacraft.taxi_body": "Кузов такси",
- "item.gtacraft.police_body": "Кузов полицейской"
+ "item.gtacraft.police_body": "Кузов полицейской",
+ "item.gtacraft.grenade": "Граната",
+ "item.gtacraft.smoke_grenade": "Дымовая граната",
+ "item.gtacraft.molotov": "Коктейль Молотова",
+ "item.gtacraft.pistol_reload": "Пистолет (перезарядка)",
+ "item.gtacraft.smg_reload": "Пистолет-пулемёт (перезарядка)",
+ "item.gtacraft.shotgun_reload": "Дробовик (перезарядка)",
+ "item.gtacraft.sniper_reload": "Снайперская винтовка (перезарядка)",
+ "item.gtacraft.rpg_reload": "Ракетомёт (перезарядка)"
 }

@@ -16,6 +16,32 @@ public final class GtaCommands {
 				Kit.give(c.getSource().getPlayerOrException());
 				return 1;
 			}))
+			.then(Commands.literal("use").executes(c -> {
+				ServerPlayer p = c.getSource().getPlayerOrException();
+				net.minecraft.world.item.ItemStack st = p.getMainHandItem();
+				if (!p.getCooldowns().isOnCooldown(st)) {
+					st.use(p.level(), p, net.minecraft.world.InteractionHand.MAIN_HAND);
+				}
+				return 1;
+			}))
+			.then(Commands.literal("reload").executes(c -> {
+				ServerPlayer p = c.getSource().getPlayerOrException();
+				GunItem.startReload((net.minecraft.server.level.ServerLevel) p.level(), p);
+				return 1;
+			}))
+			.then(Commands.literal("throw")
+				.then(Commands.literal("frag").executes(c -> throwG(c.getSource(), Phys.Kind.FRAG)))
+				.then(Commands.literal("smoke").executes(c -> throwG(c.getSource(), Phys.Kind.SMOKE)))
+				.then(Commands.literal("molotov").executes(c -> throwG(c.getSource(), Phys.Kind.MOLOTOV))))
+			.then(Commands.literal("peds")
+				.then(Commands.argument("count", IntegerArgumentType.integer(1, 60)).executes(c -> {
+					ServerPlayer p = c.getSource().getPlayerOrException();
+					if (City.current == null) {
+						return 0;
+					}
+					Peds.spawn((net.minecraft.server.level.ServerLevel) p.level(), City.current, IntegerArgumentType.getInteger(c, "count"));
+					return 1;
+				})))
 			.then(carCommand())
 			.then(missionCommand())
 			.then(Commands.literal("enter").executes(c -> {
@@ -107,6 +133,12 @@ public final class GtaCommands {
 			return 1;
 		}));
 		return m;
+	}
+
+	private static int throwG(CommandSourceStack src, Phys.Kind k) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+		ServerPlayer p = src.getPlayerOrException();
+		Phys.throwGrenade((net.minecraft.server.level.ServerLevel) p.level(), p, k, false);
+		return 1;
 	}
 
 	private static int city(CommandSourceStack src, int n) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

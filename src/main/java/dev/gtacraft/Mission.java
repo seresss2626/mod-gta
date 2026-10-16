@@ -93,6 +93,15 @@ public abstract class Mission {
 		return m;
 	}
 
+	/** NPC со случайным скином игрока (манекен). Стоит на месте. */
+	protected LivingEntity spawnNpc(BlockPos pos, String name, boolean glow) {
+		LivingEntity e = Peds.spawnNpc(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, level.random.nextFloat() * 360f, Peds.NPC_TAG, name, glow);
+		if (e != null) {
+			spawned.add(e);
+		}
+		return e;
+	}
+
 	/** Строка цели для HUD: текст + расстояние и стрелка направления. */
 	public String hudObjective() {
 		if (target == null) {

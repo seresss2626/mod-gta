@@ -10,5 +10,13 @@
  "item.gtacraft.sport_body": "Sports Car Body",
  "item.gtacraft.pickup_body": "Pickup Body",
  "item.gtacraft.taxi_body": "Taxi Body",
- "item.gtacraft.police_body": "Police Car Body"
+ "item.gtacraft.police_body": "Police Car Body",
+ "item.gtacraft.grenade": "Frag Grenade",
+ "item.gtacraft.smoke_grenade": "Smoke Grenade",
+ "item.gtacraft.molotov": "Molotov Cocktail",
+ "item.gtacraft.pistol_reload": "Pistol (reloading)",
+ "item.gtacraft.smg_reload": "SMG (reloading)",
+ "item.gtacraft.shotgun_reload": "Shotgun (reloading)",
+ "item.gtacraft.sniper_reload": "Sniper Rifle (reloading)",
+ "item.gtacraft.rpg_reload": "Rocket Launcher (reloading)"
 }

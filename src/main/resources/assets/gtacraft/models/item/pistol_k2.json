@@ -1,0 +1,42 @@
+{
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "gtacraft:item/pistol"
+ },
+ "display": {
+  "thirdperson_righthand": {
+   "rotation": [
+    -2.8,
+    -90,
+    70.4
+   ],
+   "translation": [
+    0.0,
+    4.448,
+    -0.62
+   ],
+   "scale": [
+    0.85,
+    0.85,
+    0.85
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    -2.8,
+    -90,
+    40.4
+   ],
+   "translation": [
+    1.13,
+    3.648,
+    0.01
+   ],
+   "scale": [
+    0.68,
+    0.68,
+    0.68
+   ]
+  }
+ }
+}

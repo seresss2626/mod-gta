@@ -27,11 +27,14 @@ public final class Kit {
 		p.getInventory().add(new ItemStack(ModItems.RPG));
 		p.getInventory().add(new ItemStack(ModItems.CAR_KEY));
 		p.getInventory().add(new ItemStack(ModItems.PHONE));
+		p.getInventory().add(new ItemStack(ModItems.GRENADE, 8));
+		p.getInventory().add(new ItemStack(ModItems.SMOKE_GRENADE, 4));
+		p.getInventory().add(new ItemStack(ModItems.MOLOTOV, 4));
 		for (Item b : BLOCKS) {
 			int n = b == Items.WATER_BUCKET ? 1 : 64;
 			p.getInventory().add(new ItemStack(b, n));
 		}
-		p.displayClientMessage(Component.literal("Выдан набор: всё оружие, ключ от машины, телефон и блоки."), false);
+		p.displayClientMessage(Component.literal("Выдан набор: всё оружие, гранаты, ключ от машины, телефон и блоки."), false);
 	}
 
 	public static void giveOnce(ServerPlayer p) {

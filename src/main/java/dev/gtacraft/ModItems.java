@@ -12,6 +12,12 @@ import net.minecraft.world.item.Item;
 
 public final class ModItems {
 	public static Item PISTOL, SHOTGUN, SMG, SNIPER, RPG, CAR_KEY, PHONE, BUGGY_BODY;
+	public static Item GRENADE, SMOKE_GRENADE, MOLOTOV;
+	private static final Item[] RELOAD = new Item[GunItem.Type.values().length];
+
+	public static Item reloadItem(GunItem.Type t) {
+		return RELOAD[t.ordinal()];
+	}
 
 	private static <T extends Item> T reg(String name, Function<Item.Properties, T> factory, Item.Properties props) {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(GtaCraft.MODID, name));
@@ -20,11 +26,17 @@ public final class ModItems {
 	}
 
 	public static void init() {
-		PISTOL = reg("pistol", p -> new GunItem(p, GunItem.Type.PISTOL), new Item.Properties().stacksTo(1));
-		SHOTGUN = reg("shotgun", p -> new GunItem(p, GunItem.Type.SHOTGUN), new Item.Properties().stacksTo(1));
-		SMG = reg("smg", p -> new GunItem(p, GunItem.Type.SMG), new Item.Properties().stacksTo(1));
-		SNIPER = reg("sniper", p -> new GunItem(p, GunItem.Type.SNIPER), new Item.Properties().stacksTo(1));
-		RPG = reg("rpg", p -> new GunItem(p, GunItem.Type.RPG), new Item.Properties().stacksTo(1));
+		PISTOL = reg("pistol", p -> new GunItem(p, GunItem.Type.PISTOL, false), new Item.Properties().stacksTo(1));
+		SHOTGUN = reg("shotgun", p -> new GunItem(p, GunItem.Type.SHOTGUN, false), new Item.Properties().stacksTo(1));
+		SMG = reg("smg", p -> new GunItem(p, GunItem.Type.SMG, false), new Item.Properties().stacksTo(1));
+		SNIPER = reg("sniper", p -> new GunItem(p, GunItem.Type.SNIPER, false), new Item.Properties().stacksTo(1));
+		RPG = reg("rpg", p -> new GunItem(p, GunItem.Type.RPG, false), new Item.Properties().stacksTo(1));
+		for (GunItem.Type t : GunItem.Type.values()) {
+			RELOAD[t.ordinal()] = reg(t.name().toLowerCase(java.util.Locale.ROOT) + "_reload", p -> new GunItem(p, t, true), new Item.Properties().stacksTo(1));
+		}
+		GRENADE = reg("grenade", p -> new GrenadeItem(p, Phys.Kind.FRAG), new Item.Properties().stacksTo(16));
+		SMOKE_GRENADE = reg("smoke_grenade", p -> new GrenadeItem(p, Phys.Kind.SMOKE), new Item.Properties().stacksTo(16));
+		MOLOTOV = reg("molotov", p -> new GrenadeItem(p, Phys.Kind.MOLOTOV), new Item.Properties().stacksTo(16));
 		CAR_KEY = reg("car_key", CarKeyItem::new, new Item.Properties().stacksTo(1));
 		PHONE = reg("phone", PhoneItem::new, new Item.Properties().stacksTo(1));
 		for (CarType t : CarType.values()) {
@@ -40,6 +52,9 @@ public final class ModItems {
 			e.accept(SMG);
 			e.accept(SNIPER);
 			e.accept(RPG);
+			e.accept(GRENADE);
+			e.accept(SMOKE_GRENADE);
+			e.accept(MOLOTOV);
 		});
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(e -> { e.accept(CAR_KEY); e.accept(PHONE); });
 	}

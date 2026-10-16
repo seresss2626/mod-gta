@@ -1,6 +1,48 @@
 {
  "model": {
-  "type": "minecraft:model",
-  "model": "gtacraft:item/pistol"
+  "type": "minecraft:range_dispatch",
+  "property": "minecraft:cooldown",
+  "scale": 1.0,
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "gtacraft:item/pistol"
+  },
+  "entries": [
+   {
+    "threshold": 0.12,
+    "model": {
+     "type": "minecraft:model",
+     "model": "gtacraft:item/pistol_k0"
+    }
+   },
+   {
+    "threshold": 0.28,
+    "model": {
+     "type": "minecraft:model",
+     "model": "gtacraft:item/pistol_k1"
+    }
+   },
+   {
+    "threshold": 0.45,
+    "model": {
+     "type": "minecraft:model",
+     "model": "gtacraft:item/pistol_k2"
+    }
+   },
+   {
+    "threshold": 0.62,
+    "model": {
+     "type": "minecraft:model",
+     "model": "gtacraft:item/pistol_k3"
+    }
+   },
+   {
+    "threshold": 0.82,
+    "model": {
+     "type": "minecraft:model",
+     "model": "gtacraft:item/pistol_k4"
+    }
+   }
+  ]
  }
 }

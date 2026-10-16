@@ -1,0 +1,138 @@
+{
+ "textures": {
+  "a": "gtacraft:item/gr_gray",
+  "w": "gtacraft:item/gr_white",
+  "b": "gtacraft:item/gr_dark",
+  "particle": "gtacraft:item/gr_gray"
+ },
+ "elements": [
+  {
+   "from": [
+    6,
+    4.5,
+    6
+   ],
+   "to": [
+    10,
+    10.5,
+    10
+   ],
+   "faces": {
+    "north": {
+     "texture": "#a"
+    },
+    "south": {
+     "texture": "#a"
+    },
+    "east": {
+     "texture": "#a"
+    },
+    "west": {
+     "texture": "#a"
+    },
+    "up": {
+     "texture": "#a"
+    },
+    "down": {
+     "texture": "#a"
+    }
+   }
+  },
+  {
+   "from": [
+    5.9,
+    7,
+    5.9
+   ],
+   "to": [
+    10.1,
+    8.6,
+    10.1
+   ],
+   "faces": {
+    "north": {
+     "texture": "#w"
+    },
+    "south": {
+     "texture": "#w"
+    },
+    "east": {
+     "texture": "#w"
+    },
+    "west": {
+     "texture": "#w"
+    },
+    "up": {
+     "texture": "#w"
+    },
+    "down": {
+     "texture": "#w"
+    }
+   }
+  },
+  {
+   "from": [
+    6.7,
+    10.5,
+    6.7
+   ],
+   "to": [
+    9.3,
+    11.6,
+    9.3
+   ],
+   "faces": {
+    "north": {
+     "texture": "#b"
+    },
+    "south": {
+     "texture": "#b"
+    },
+    "east": {
+     "texture": "#b"
+    },
+    "west": {
+     "texture": "#b"
+    },
+    "up": {
+     "texture": "#b"
+    },
+    "down": {
+     "texture": "#b"
+    }
+   }
+  },
+  {
+   "from": [
+    10,
+    6,
+    7.4
+   ],
+   "to": [
+    10.5,
+    11,
+    8.6
+   ],
+   "faces": {
+    "north": {
+     "texture": "#b"
+    },
+    "south": {
+     "texture": "#b"
+    },
+    "east": {
+     "texture": "#b"
+    },
+    "west": {
+     "texture": "#b"
+    },
+    "up": {
+     "texture": "#b"
+    },
+    "down": {
+     "texture": "#b"
+    }
+   }
+  }
+ ]
+}

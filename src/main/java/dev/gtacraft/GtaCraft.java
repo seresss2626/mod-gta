@@ -22,9 +22,11 @@ public class GtaCraft implements ModInitializer {
 	public void onInitialize() {
 		ModItems.init();
 		PayloadTypeRegistry.playS2C().register(HudPayload.TYPE, HudPayload.CODEC);
+		PayloadTypeRegistry.playS2C().register(KickPayload.TYPE, KickPayload.CODEC);
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			PlayerStats.load(server);
 			City.load(server);
+			Peds.load(server);
 		});
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> PlayerStats.save());
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
@@ -52,6 +54,9 @@ public class GtaCraft implements ModInitializer {
 			CarManager.tick(server);
 			CityBuilder.tick(server);
 			Wanted.tick(server);
+			Peds.tick(server);
+			Phys.tick(server);
+			GunItem.tickReloads(server);
 			Radio.tick(server);
 			MissionManager.tick(server);
 			Hud.tick(server);

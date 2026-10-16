@@ -11,7 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.level.block.Blocks;
 
 /** Реализации заданий в духе GTA. */
@@ -67,7 +66,7 @@ public final class Missions {
 			if (stage == 0 && dist2d(target) < 28) {
 				stage = 1;
 				BlockPos in = new BlockPos(shop[2], City.current.gy + 1, shop[3]);
-				Villager clerk = spawnMob(EntityType.VILLAGER, in, "Продавец", false);
+				LivingEntity clerk = spawnNpc(in, "Продавец", false);
 				if (clerk != null) {
 					clerk.setInvulnerable(true);
 				}
@@ -162,7 +161,7 @@ public final class Missions {
 
 	// ---------------------------------------------------------------- Такси
 	public static class Taxi extends Mission {
-		private Villager client;
+		private LivingEntity client;
 		private int stage;
 		private int outTicks;
 		private BlockPos dest;
@@ -172,7 +171,7 @@ public final class Missions {
 			super(p, "Такси");
 			this.target = sidewalkNear(p, 40, 90);
 			this.objective = "Подъедьте к клиенту на машине";
-			this.client = spawnMob(EntityType.VILLAGER, target, "Клиент", true);
+			this.client = spawnNpc(target, "Клиент", true);
 		}
 
 		@Override
@@ -241,7 +240,7 @@ public final class Missions {
 
 	// ---------------------------------------------------------------- Заказ
 	public static class Assassination extends Mission {
-		private Villager victim;
+		private LivingEntity victim;
 		private int guards;
 
 		public Assassination(ServerPlayer p) {
@@ -249,7 +248,7 @@ public final class Missions {
 			BlockPos at = sidewalkNear(p, 60, 110);
 			this.target = at;
 			this.objective = "Найдите и устраните цель";
-			this.victim = spawnMob(EntityType.VILLAGER, at, "Цель", true);
+			this.victim = spawnNpc(at, "Цель", true);
 			for (int i = 0; i < 2; i++) {
 				Mob g = spawnMob(EntityType.SKELETON, at.offset(i * 2 - 1, 0, 2), "Охранник", false);
 				if (g != null) {
