@@ -1,0 +1,9 @@
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-client-gametest-api-v1/4.3.5+bfe9fcf43e/1a2daadc60556388761cece585872367c8bf7409/fabric-client-gametest-api-v1-4.3.5+bfe9fcf43e.jar
+Compiled from "TestWorldBuilder.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder {
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder setUseConsistentSettings(boolean);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder adjustSettings(java.util.function.Consumer<net.minecraft.class_8100>);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext create();
+  public default net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext createServer();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext createServer(java.util.Properties);
+}
