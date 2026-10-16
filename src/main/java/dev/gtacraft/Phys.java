@@ -79,6 +79,7 @@ public final class Phys {
 		double speed = soft ? 0.42 : 1.05;
 		Body b = create(level, kind, pos);
 		if (b == null) {
+			GtaCraft.LOG.warn("Phys throw: create failed for {} at {}", kind, pos);
 			return false;
 		}
 		GtaCraft.LOG.info("Phys throw {} from player ({}, {}, {}) spawn=({}, {}, {})", kind, String.format(Locale.ROOT, "%.1f", p.getX()),
@@ -91,6 +92,21 @@ public final class Phys {
 		b.sx = 25f + level.random.nextFloat() * 20f;
 		b.sy = (level.random.nextFloat() - 0.5f) * 30f;
 		level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.SNOWBALL_THROW, SoundSource.PLAYERS, 0.8f, 0.7f);
+		return true;
+	}
+
+	/** Для проверки физики без игрока: тело стартует с заданной скоростью. */
+	public static boolean spawnTest(ServerLevel level, Kind kind, Vec3 pos, Vec3 vel) {
+		Body b = create(level, kind, pos);
+		if (b == null) {
+			GtaCraft.LOG.warn("Phys test: create failed for {} at {}", kind, pos);
+			return false;
+		}
+		b.vx = vel.x;
+		b.vy = vel.y;
+		b.vz = vel.z;
+		b.sx = 30f;
+		GtaCraft.LOG.info("Phys test {} at ({}, {}, {}) v=({}, {}, {})", kind, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
 		return true;
 	}
 
@@ -123,8 +139,9 @@ public final class Phys {
 				+ "transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],scale:[%.2ff,%.2ff,%.2ff],translation:[0f,0f,0f]}}",
 			pos.x, pos.y, pos.z, TAG, NEW_TAG, kind.model, kind.scale, kind.scale, kind.scale);
 		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withLevel(level), cmd);
-		List<Entity> found = level.getEntitiesOfClass(Entity.class, new AABB(pos, pos).inflate(0.6), e -> e.getTags().contains(NEW_TAG));
+		List<Entity> found = level.getEntitiesOfClass(Entity.class, new AABB(pos, pos).inflate(2.0), e -> e.getTags().contains(NEW_TAG));
 		if (found.isEmpty()) {
+			GtaCraft.LOG.warn("Phys create: summoned entity not found near {}", pos);
 			return null;
 		}
 		Entity d = found.get(0);

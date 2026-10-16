@@ -33,6 +33,14 @@ public final class GtaCommands {
 				.then(Commands.literal("frag").executes(c -> throwG(c.getSource(), Phys.Kind.FRAG)))
 				.then(Commands.literal("smoke").executes(c -> throwG(c.getSource(), Phys.Kind.SMOKE)))
 				.then(Commands.literal("molotov").executes(c -> throwG(c.getSource(), Phys.Kind.MOLOTOV))))
+			.then(Commands.literal("phystest")
+				.then(Commands.argument("x", DoubleArgumentType.doubleArg())
+					.then(Commands.argument("y", DoubleArgumentType.doubleArg())
+						.then(Commands.argument("z", DoubleArgumentType.doubleArg())
+							.then(physKind("frag", Phys.Kind.FRAG))
+							.then(physKind("smoke", Phys.Kind.SMOKE))
+							.then(physKind("molotov", Phys.Kind.MOLOTOV))
+							.then(physKind("casing", Phys.Kind.CASING))))))
 			.then(Commands.literal("peds")
 				.then(Commands.argument("count", IntegerArgumentType.integer(1, 60)).executes(c -> {
 					ServerPlayer p = c.getSource().getPlayerOrException();
@@ -133,6 +141,14 @@ public final class GtaCommands {
 			return 1;
 		}));
 		return m;
+	}
+
+	private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> physKind(String name, Phys.Kind k) {
+		return Commands.literal(name).executes(c -> {
+			net.minecraft.world.phys.Vec3 pos = new net.minecraft.world.phys.Vec3(DoubleArgumentType.getDouble(c, "x"),
+				DoubleArgumentType.getDouble(c, "y"), DoubleArgumentType.getDouble(c, "z"));
+			return Phys.spawnTest(c.getSource().getLevel(), k, pos, new net.minecraft.world.phys.Vec3(0.35, 0.25, 0.12)) ? 1 : 0;
+		});
 	}
 
 	private static int throwG(CommandSourceStack src, Phys.Kind k) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
