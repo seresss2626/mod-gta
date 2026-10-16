@@ -81,6 +81,9 @@ public final class Phys {
 		if (b == null) {
 			return false;
 		}
+		GtaCraft.LOG.info("Phys throw {} from player ({}, {}, {}) spawn=({}, {}, {})", kind, String.format(Locale.ROOT, "%.1f", p.getX()),
+			String.format(Locale.ROOT, "%.1f", p.getY()), String.format(Locale.ROOT, "%.1f", p.getZ()), String.format(Locale.ROOT, "%.1f", pos.x),
+			String.format(Locale.ROOT, "%.1f", pos.y), String.format(Locale.ROOT, "%.1f", pos.z));
 		b.owner = p;
 		b.vx = look.x * speed;
 		b.vy = look.y * speed + (soft ? 0.05 : 0.14);
@@ -149,7 +152,19 @@ public final class Phys {
 				it.remove();
 				continue;
 			}
-			if (step(b)) {
+			boolean done;
+			try {
+				done = step(b);
+			} catch (RuntimeException ex) {
+				GtaCraft.LOG.error("Phys step failed for " + b.kind, ex);
+				done = true;
+			}
+			if (b.kind != Kind.CASING && b.age % 20 == 0) {
+				GtaCraft.LOG.info("Phys {} age={} pos=({}, {}, {}) v=({}, {}, {})", b.kind, b.age, String.format(Locale.ROOT, "%.1f", b.x),
+					String.format(Locale.ROOT, "%.1f", b.y), String.format(Locale.ROOT, "%.1f", b.z), String.format(Locale.ROOT, "%.2f", b.vx),
+					String.format(Locale.ROOT, "%.2f", b.vy), String.format(Locale.ROOT, "%.2f", b.vz));
+			}
+			if (done) {
 				b.disp.discard();
 				it.remove();
 			}

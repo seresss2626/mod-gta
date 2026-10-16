@@ -100,6 +100,7 @@ public class GtaClientTest implements FabricClientGameTest {
 			context.waitTicks(30);
 
 			// гранаты
+			server.runCommand("effect give @p minecraft:resistance 100 4 true");
 			server.runCommand("tp @p 0 101 0 0 -12");
 			server.runCommand("execute as @p run gta throw frag");
 			context.waitTicks(14);
