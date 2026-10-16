@@ -44,7 +44,7 @@ public final class Phys {
 	}
 
 	private static final String TAG = "gta_phys";
-	private static final String NEW_TAG = "gta_new_phys";
+	private static int counter;
 
 	private static final class Body {
 		Kind kind;
@@ -58,6 +58,8 @@ public final class Phys {
 		boolean hitSound;
 		double sx0, sy0, sz0;
 		int bounces;
+		String pendTag;
+		int waited;
 	}
 
 	private static final class Zone {
@@ -131,25 +133,23 @@ public final class Phys {
 		b.sy = (level.random.nextFloat() - 0.5f) * 80f;
 	}
 
+	/**
+	 * Команда summon может выполниться чуть позже (если мы внутри другой команды), поэтому сущность
+	 * ищется по уникальному тегу уже в тике: тело создаётся сразу, а модель привязывается позже.
+	 */
 	private static Body create(ServerLevel level, Kind kind, Vec3 pos) {
 		MinecraftServer server = level.getServer();
+		String pend = "gta_pn_" + (counter++);
 		String cmd = String.format(Locale.ROOT,
 			"summon minecraft:item_display %.3f %.3f %.3f {Tags:[\"%s\",\"%s\"],item:{id:\"minecraft:stick\",count:1,"
 				+ "components:{\"minecraft:item_model\":\"gtacraft:%s\"}},item_display:\"none\",teleport_duration:1,"
 				+ "transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],scale:[%.2ff,%.2ff,%.2ff],translation:[0f,0f,0f]}}",
-			pos.x, pos.y, pos.z, TAG, NEW_TAG, kind.model, kind.scale, kind.scale, kind.scale);
+			pos.x, pos.y, pos.z, TAG, pend, kind.model, kind.scale, kind.scale, kind.scale);
 		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withLevel(level), cmd);
-		List<Entity> found = level.getEntitiesOfClass(Entity.class, new AABB(pos, pos).inflate(2.0), e -> e.getTags().contains(NEW_TAG));
-		if (found.isEmpty()) {
-			GtaCraft.LOG.warn("Phys create: summoned entity not found near {}", pos);
-			return null;
-		}
-		Entity d = found.get(0);
-		d.removeTag(NEW_TAG);
 		Body b = new Body();
 		b.kind = kind;
 		b.level = level;
-		b.disp = d;
+		b.pendTag = pend;
 		b.x = pos.x;
 		b.y = pos.y;
 		b.z = pos.z;
@@ -160,12 +160,30 @@ public final class Phys {
 		return b;
 	}
 
+	private static boolean resolve(Body b) {
+		List<Entity> found = b.level.getEntitiesOfClass(Entity.class, new AABB(b.x, b.y, b.z, b.x, b.y, b.z).inflate(3.0),
+			e -> e.getTags().contains(b.pendTag));
+		if (found.isEmpty()) {
+			return false;
+		}
+		b.disp = found.get(0);
+		b.disp.removeTag(b.pendTag);
+		return true;
+	}
+
 	// ------------------------------------------------------------------ тик
 	public static void tick(MinecraftServer server) {
 		Iterator<Body> it = BODIES.iterator();
 		while (it.hasNext()) {
 			Body b = it.next();
-			if (b.disp == null || b.disp.isRemoved()) {
+			if (b.disp == null) {
+				if (!resolve(b) && ++b.waited > 10) {
+					GtaCraft.LOG.warn("Phys: model entity for {} never appeared", b.kind);
+					it.remove();
+				}
+				continue;
+			}
+			if (b.disp.isRemoved()) {
 				it.remove();
 				continue;
 			}
@@ -202,7 +220,9 @@ public final class Phys {
 	private static void sweepOrphans(MinecraftServer server) {
 		Set<UUID> live = new HashSet<>();
 		for (Body b : BODIES) {
-			live.add(b.disp.getUUID());
+			if (b.disp != null) {
+				live.add(b.disp.getUUID());
+			}
 		}
 		for (ServerPlayer p : server.getPlayerList().getPlayers()) {
 			if (p.level() instanceof ServerLevel level) {
