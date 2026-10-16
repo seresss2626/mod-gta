@@ -56,6 +56,8 @@ public final class Phys {
 		int age;
 		boolean ground;
 		boolean hitSound;
+		double sx0, sy0, sz0;
+		int bounces;
 	}
 
 	private static final class Zone {
@@ -131,6 +133,9 @@ public final class Phys {
 		b.x = pos.x;
 		b.y = pos.y;
 		b.z = pos.z;
+		b.sx0 = pos.x;
+		b.sy0 = pos.y;
+		b.sz0 = pos.z;
 		BODIES.add(b);
 		return b;
 	}
@@ -237,6 +242,9 @@ public final class Phys {
 		b.sy *= 0.97;
 		b.disp.snapTo(b.x, b.y, b.z, b.ry, b.rx);
 
+		if (impact > 0.1) {
+			b.bounces++;
+		}
 		if (impact > 0.1 && !b.hitSound) {
 			b.hitSound = casing;
 			b.level.playSound(null, b.x, b.y, b.z, SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, casing ? 0.05f : 0.2f, casing ? 2.4f : 1.8f);
@@ -257,6 +265,7 @@ public final class Phys {
 			case SMOKE:
 				b.level.sendParticles(ParticleTypes.CLOUD, b.x, b.y + 0.15, b.z, 1, 0.02, 0.02, 0.02, 0.01);
 				if (b.age >= b.kind.life) {
+					logEnd(b, "smoke");
 					Zone z = new Zone();
 					z.kind = Kind.SMOKE;
 					z.level = b.level;
@@ -296,7 +305,14 @@ public final class Phys {
 		return b.level.noCollision(new AABB(x - h, y - h, z - h, x + h, y + h, z + h));
 	}
 
+	private static void logEnd(Body b, String what) {
+		GtaCraft.LOG.info("Phys {} {} age={} at ({}, {}, {}) from ({}, {}, {}) bounces={}", b.kind, what, b.age,
+			String.format(Locale.ROOT, "%.1f", b.x), String.format(Locale.ROOT, "%.1f", b.y), String.format(Locale.ROOT, "%.1f", b.z),
+			String.format(Locale.ROOT, "%.1f", b.sx0), String.format(Locale.ROOT, "%.1f", b.sy0), String.format(Locale.ROOT, "%.1f", b.sz0), b.bounces);
+	}
+
 	private static void explode(Body b) {
+		logEnd(b, "detonated");
 		ServerLevel l = b.level;
 		l.explode(b.owner, b.x, b.y + 0.2, b.z, 2.8f, Level.ExplosionInteraction.NONE);
 		l.sendParticles(ParticleTypes.EXPLOSION_EMITTER, b.x, b.y + 0.3, b.z, 1, 0, 0, 0, 0);

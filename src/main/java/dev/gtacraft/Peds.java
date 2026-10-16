@@ -137,6 +137,10 @@ public final class Peds {
 			for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(40), x -> x.getTags().contains(TAG))) {
 				if (e.isAlive() && seen.add(e.getUUID())) {
 					step(level, e, p);
+					if (seen.size() == 1 && server.getTickCount() % 100 == 0) {
+						GtaCraft.LOG.info("Ped sample pos=({}, {}, {}) yaw={} peds_near={}", String.format(Locale.ROOT, "%.2f", e.getX()),
+							String.format(Locale.ROOT, "%.2f", e.getY()), String.format(Locale.ROOT, "%.2f", e.getZ()), STATE.get(e.getUUID()).yaw, 0);
+					}
 				}
 			}
 		}
